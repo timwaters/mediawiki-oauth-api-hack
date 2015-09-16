@@ -2,7 +2,12 @@ require 'rubygems'
 require 'oauth'
 require 'yaml'
 
-#KEY=foo SECRET=bar ruby basic.rb
+# Basic oauth interactions with mediawiki oauth api 
+# Usage
+# KEY=foo SECRET=bar ruby basic.rb
+#
+#any problems and delete auth.yaml file and try again
+#note mediawiki oauth works for localhost only until approved.
 
 @consumer = OAuth::Consumer.new ENV["KEY"], ENV["SECRET"],
                     {:site=>"https://commons.wikimedia.org", 
