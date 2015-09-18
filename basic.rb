@@ -10,7 +10,7 @@ require 'yaml'
 #note mediawiki oauth works for localhost only until approved.
 
 @consumer = OAuth::Consumer.new ENV["KEY"], ENV["SECRET"],
-                    {:site=>"https://commons.wikimedia.org", 
+                    {:site=>"http://commons.wikimedia.beta.wmflabs.org", 
                      :authorize_path => '/wiki/Special:Oauth/authorize',
                      :access_token_path => '/w/index.php?title=Special:OAuth/token',
                      :request_token_path => '/w/index.php?title=Special:OAuth/initiate'
@@ -38,7 +38,7 @@ unless File.exists? "auth.yaml"
 
 @access_token = OAuth::AccessToken.new(@consumer, auth['token'], auth['token_secret']) 
 
-uri = 'https://commons.wikimedia.org/w/api.php?action=query&meta=userinfo&uiprop=rights|editcount&format=json'
+uri = 'http://commons.wikimedia.beta.wmflabs.org/w/api.php?action=query&meta=userinfo&uiprop=rights|editcount&format=json'
 resp = @access_token.get(URI.encode(uri))
 puts resp.body.inspect
 # {"query":{"userinfo":{"id":12345,"name":"WikiUser",
