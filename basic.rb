@@ -58,22 +58,27 @@ uri = "#{site}/w/api.php?action=query&prop=revisions&rvprop=content&format=json&
 resp = @access_token.get(URI.encode(uri))
 body = JSON.parse(resp.body)
 
-#puts body["query"]["pages"].inspect
+#
+# Get wikitext
+#
 
 pageid = body["query"]["pages"].keys.first
-
 revision = body["query"]["pages"][pageid]["revisions"].first 
-puts revision.inspect
 wikitext = revision["*"]
-puts wikitext
+
 
 if wikitext.include? "{{Map"
   # \{\{Map(.*?)\}\}  matches {{Map .... }}
   #\{\{\s*Map(.*?)\}\} matches {{  Map .... }}
+#  match for  {{Template:Map}} ?
+# \{{2}\s*(Map|Template:map)(.*?)\}{2}
 end
-puts "-----"
 
-map_match = /\{{2}\s*Map(.*?)\}{2}/m.match(wikitext)
+#
+# see if there is a map template in the wikitext
+#
+
+map_match = /\{{2}\s*(Map|Template:map)(.*?)\}{2}/mi.match(wikitext)
 
 if map_match
   map_template = map_match[0]
@@ -82,10 +87,11 @@ if map_match
   new_attrs = []
   map_attrs.each do | map_attr |
     if map_attr.include? "warped"
-      map_attr = "warped=yes \n"
+      map_attr = "warped=yes\n"
     end
     new_attrs << map_attr
   end
+  puts "new attrs"
   puts new_attrs.inspect
   map_template = new_attrs.join("|")
   puts map_template.inspect
@@ -94,17 +100,11 @@ if map_match
   puts wikitext.inspect
 end
 
+#
+# SAVE THE WIKITEXT TO THE PAGE
+#
 
-
-
-
-
-# {"batchcomplete"=>"", "query"=>{"pages"=>{"51031"=>{"pageid"=>51031, "ns"=>3, 
-#   "title"=>"User talk:Chippyy", "revisions"=>[{"contentformat"=>"text/x-wiki", 
-#     "contentmodel"=>"wikitext", 
-#     "*"=>"{{Welcome|realName=|name=Chippyy}}\n\n-- [[User:Wikimedia Commons Welcome|Wikimedia Commons Welcome]] ([[User talk:Wikimedia Commons Welcome|<span class=\"signature-talk\">talk</span>]]) 14:17, 17 September 2015 (UTC)\n\n== Hello World ==\n\nthis message was automtically posted by oauth demo script\n\n== Hello World ==\n\nthis message was automtically posted by oauth demo script"}]}}}}
-
-if false
+if map_match && true 
 
   #
   # Next fetch the edit csrf token
@@ -121,15 +121,12 @@ if false
   #"pageid" => 51031
   post_body =  { "action" => "edit",
                   "title"=> page,
-                  "section" => "new",
-                  "sectiontitle" => "Hello World",
-                  "text" => "this message was automtically posted by oauth demo script",
-                  "summary" => "Hello world posting from oauth",
+                  "text" => wikitext,
+                  "summary" => "updating map template warped attribute",
                   "watchlist" => "nochange",
                   "bot"=> "true",
                   "nocreate" => "true",
                   "contentmodel" => "wikitext",
-                  "contentformat" => "text/plain",
                   "token" => token,
                   "format" => "json"
                 }
@@ -139,5 +136,13 @@ if false
   # \"contentmodel\":\"wikitext\",\"oldrevid\":78186,\"newrevid\":78206,\"newtimestamp\":\"2015-09-18T14:52:01Z\"}}"
 end
 
+
+# {{Map
+#  |title = testing
+#  |description= a description
+#  |latitude = 1.2/1.3/1.5/2.6
+#  |longitude = 1.2/1.3/1.5/2.6
+#  |warped = no
+# }}
 
 
