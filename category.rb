@@ -3,6 +3,13 @@ require 'oauth'
 require 'yaml'
 require 'json'
 
+# uncomment the following httplog lines if you want to see how oauth does it's requests etc.
+#require 'httplog'
+#HttpLog.options[:logger]        = Logger.new($stdout)
+#HttpLog.options[:severity]      = Logger::Severity::DEBUG
+#HttpLog.options[:log_headers]   = true
+
+
 # Basic oauth interactions with mediawiki oauth api 
 # Usage
 # KEY=foo SECRET=bar ruby basic.rb
@@ -68,4 +75,17 @@ puts body["continue"].inspect
  end
 
 puts category_members.inspect
+
+# # get pageid from a title
+# title = "File:Senate_Atlas%2C_1870%E2%80%931907._Sheet_XXI-XXII_12-13_Ahlainen.jpg"
+# title = URI.decode title
+# 
+# uri = "#{site}/w/api.php?action=query&prop=info&format=json&titles=#{title}"
+# puts uri.inspect
+# 
+# resp = @access_token.get(URI.encode(uri))
+# body = JSON.parse(resp.body)
+# 
+# puts body.inspect
+
 
